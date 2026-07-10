@@ -19,6 +19,30 @@ Agents use `--json`:
 scholar "constraint management OEE" --count 5 --json
 ```
 
+## Deep context for one work
+
+`scholar context` takes a DOI, an OpenAlex ID, or a title and returns the
+layered context around a single paper — its abstract, the work it **builds
+on** (its most credible references), what **cited** it, and **related**
+work. One call, four layers, so an agent can walk a citation graph instead
+of re-searching.
+
+```bash
+scholar context 10.1038/nature14539
+scholar context "attention is all you need" --json
+```
+
+```
+Attention Is All You Need (2017)  [open access]
+...
+── Builds on (its most credible references) ──
+1. Deep Residual Learning for Image Recognition ...
+── Cited by (what built on it) ──
+1. BERT: Pre-training of Deep Bidirectional Transformers ...
+── Related ──
+...
+```
+
 ## Why
 
 General web search feeds agents SEO slop and press releases. The scholarly
@@ -36,6 +60,8 @@ zero-config front door to that.
 | `--json` | structured output for agents |
 | `--mailto EMAIL` | OpenAlex polite pool (better rate limits); or env `SCHOLAR_MAILTO` |
 
+`context` takes `--json` and `--mailto` too.
+
 ## The number
 
 TBD — benchmark in progress: % of top-5 results that are peer-reviewed
@@ -46,7 +72,7 @@ questions. Harness: `benchmark/run_benchmark.py`.
 
 - **No general web search.** Tavily and built-in web search exist; this is the scholarly lane only.
 - **No summarization.** The agent is the brain; this tool is the hands.
-- **No full-text extraction yet.** v1 returns metadata + open-access links.
+- **No full-text extraction yet.** v1 returns metadata, abstracts + open-access links.
 - **No multi-source fusion yet.** OpenAlex covers ~250M works. A second source gets added when a real query misses, not before.
 
 ## Development

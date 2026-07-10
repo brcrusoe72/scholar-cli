@@ -1,0 +1,9 @@
+# One research question per line. Lines starting with # are ignored.
+# Target: 20 questions. Mix your real domains — the benchmark is only honest
+# if these are questions you would actually research.
+what does the evidence say about gut microbiome and depression
+does overall equipment effectiveness correlate with plant profitability
+health effects of shift work on sleep and metabolism
+grid-scale battery storage cost trajectory
+does retrieval augmented generation reduce llm hallucination
+# add 15 more before publishing the number

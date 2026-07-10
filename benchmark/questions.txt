@@ -1,9 +1,32 @@
 # One research question per line. Lines starting with # are ignored.
-# Target: 20 questions. Mix your real domains — the benchmark is only honest
-# if these are questions you would actually research.
-what does the evidence say about gut microbiome and depression
+# Honest benchmark rule: these are questions Brian actually researches.
+
+# --- manufacturing floor ---
 does overall equipment effectiveness correlate with plant profitability
+what changeover time reduction methods show measured results in food manufacturing
+effect of operator cross-training on production line performance
+do tiered daily management huddles improve manufacturing KPIs
+root causes of minor stops in high-speed packaging lines
+does preventive maintenance frequency reduce unplanned downtime
+
+# --- shift work and people ---
 health effects of shift work on sleep and metabolism
+effect of 12-hour versus 8-hour shifts on workplace safety incidents
+what interventions reduce turnover among hourly manufacturing workers
+
+# --- power and energy ---
 grid-scale battery storage cost trajectory
+data center electricity demand growth and grid impact
+drivers of rising US retail electricity prices transmission and distribution
+levelized cost of electricity nuclear versus renewables with storage
+effect of industrial electricity prices on manufacturing location decisions
+
+# --- AI and agents ---
 does retrieval augmented generation reduce llm hallucination
-# add 15 more before publishing the number
+large language models for industrial predictive maintenance
+how reliable are llm agents at multi-step tool use
+does ai-assisted programming improve developer productivity
+
+# --- health / personal ---
+what does the evidence say about gut microbiome and depression
+adult adhd task initiation interventions evidence

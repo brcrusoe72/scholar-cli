@@ -64,9 +64,15 @@ zero-config front door to that.
 
 ## The number
 
-TBD — benchmark in progress: % of top-5 results that are peer-reviewed
-primary sources, `scholar` vs. default agent web search, across 20 research
-questions. Harness: `benchmark/run_benchmark.py`.
+**scholar 26% vs. default web search 18%** — share of the top-5 results that
+are peer-reviewed primary sources addressing the question, across 20 research
+questions ([full results + method](benchmark/RESULTS.md)).
+
+The win is real but honest: scholar dominates well-specified scientific
+queries (preventive-maintenance 5/0, shift-work 5/4) and ties or loses on
+short ambiguous keywords, where OpenAlex's lexical search returns the wrong
+sense of a word ("plant profitability" → botany). The benchmark's clear next
+lever is **query relevance**, not ranking. Reproduce: `benchmark/run_benchmark.py`.
 
 ## Non-goals (v1)
 

@@ -59,6 +59,8 @@ def _work_lines(w: Work, prefix: str) -> list[str]:
         flags.append("RETRACTED")
     if w.oa_url:
         flags.append("open access")
+    if w.relevance is not None:
+        flags.append(f"rel {w.relevance:.2f}")
     flag_str = f"  [{', '.join(flags)}]" if flags else ""
     pad = " " * len(prefix)
     return [

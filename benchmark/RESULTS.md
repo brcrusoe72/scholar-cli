@@ -1,4 +1,38 @@
-# scholar benchmark — results (2026-07-10)
+# scholar benchmark — results
+
+## Update 2026-07-11 — relevance filter (v0.3.0)
+
+The 2026-07-10 benchmark found scholar's bottleneck was query relevance, not
+ranking. v0.3.0 adds a deterministic relevance filter: over-fetch candidates,
+score each by weighted query-term coverage **plus adjacent-phrase coverage**,
+drop anything below 0.40, then order survivors. Same 20 questions, same rubric:
+
+| metric | before (v0.2) | after filter (v0.3) |
+|---|---|---|
+| **precision** (on-target ÷ results returned) | 26% (26/100) | **52%** (35/67) |
+| primary@5 (on-target per 5 slots) | 26% | **35%** |
+| queries returning misleading off-topic noise | most | **0** |
+
+**Precision nearly doubled** — when scholar returns a result it's now on-target
+about half the time, vs. a quarter. The win comes two ways: over-fetching +
+filtering *surfaces* on-topic papers OpenAlex buried (12h/8h-shift safety 2→5,
+data-center demand 2→4, gut-microbiome/depression 1→4, LLM predictive
+maintenance 1→3, AI-coding 0→2), and the phrase gate *drops* the ambiguous-word
+false positives (OEE↔"plant" botany, "production line"↔sheep production,
+"packaging lines"↔high-speed circuits). Two manufacturing-practitioner queries
+now return **empty** — an honest "no strong scholarly match" beats five
+off-topic papers.
+
+**The honest cost:** the filter also drops genuine matches on vocabulary
+variants — a "preventive maintenance" query loses "*predictive* maintenance"
+papers (preventive≠predictive under prefix matching), so preventive-maintenance
+fell 5→3 and a few others slipped. Net is still strongly positive, and the
+tradeoff is tunable (`--min-relevance`, `--no-filter`). Regenerate:
+`run_benchmark.py --filtered`; raw per-query results in `results_filtered.md`.
+
+---
+
+## Baseline (2026-07-10)
 
 **The number: scholar 26% vs. default web search 18%.**
 

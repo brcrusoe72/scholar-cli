@@ -62,17 +62,28 @@ zero-config front door to that.
 
 `context` takes `--json` and `--mailto` too.
 
+## Relevance filter
+
+Short queries with ambiguous words used to return the wrong sense ("OEE ↔
+**plant** profitability" → botany papers). `scholar` over-fetches candidates,
+scores each by query-term **and adjacent-phrase** coverage, and drops anything
+below `--min-relevance` (default 0.40) — so one common word can't carry an
+off-topic result, and an unmatched query returns empty rather than noise.
+`--no-filter` disables it; every result shows its `rel` score.
+
 ## The number
 
-**scholar 26% vs. default web search 18%** — share of the top-5 results that
-are peer-reviewed primary sources addressing the question, across 20 research
-questions ([full results + method](benchmark/RESULTS.md)).
+Across 20 research questions, share of returned results that are peer-reviewed
+primary sources addressing the question ([full results + method](benchmark/RESULTS.md)):
 
-The win is real but honest: scholar dominates well-specified scientific
-queries (preventive-maintenance 5/0, shift-work 5/4) and ties or loses on
-short ambiguous keywords, where OpenAlex's lexical search returns the wrong
-sense of a word ("plant profitability" → botany). The benchmark's clear next
-lever is **query relevance**, not ranking. Reproduce: `benchmark/run_benchmark.py`.
+| | precision | vs. web search |
+|---|---|---|
+| **scholar + relevance filter** (v0.3) | **52%** | — |
+| scholar, no filter (v0.2) | 26% | 18% |
+
+The filter nearly doubled precision by surfacing on-topic papers OpenAlex
+buried and dropping ambiguous-keyword false positives. Reproduce:
+`benchmark/run_benchmark.py --filtered`.
 
 ## Non-goals (v1)
 

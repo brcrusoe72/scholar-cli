@@ -13,6 +13,7 @@ import sys
 from . import __version__
 from .openalex import OpenAlexError, citing_works, get_work, search, works_by_ids
 from .ranking import rank
+from .relevance import DEFAULT_MIN_RELEVANCE, filter_and_rank
 from .render import context_to_json, context_to_terminal, to_json, to_terminal
 
 REFS_SHOWN = 5
@@ -41,18 +42,34 @@ def _search_cmd(argv: list[str]) -> int:
     parser.add_argument("--since", type=int, metavar="YEAR", help="only works published in YEAR or later")
     parser.add_argument("--oa", action="store_true", help="open-access works only")
     parser.add_argument("--count", type=int, default=10, help="number of results (default 10)")
+    parser.add_argument("--min-relevance", type=float, default=DEFAULT_MIN_RELEVANCE,
+                        metavar="0-1", help=f"drop results below this query-coverage score "
+                        f"(default {DEFAULT_MIN_RELEVANCE}; 0 disables)")
+    parser.add_argument("--no-filter", action="store_true",
+                        help="skip the relevance filter (raw OpenAlex order)")
     parser.add_argument("--json", action="store_true", help="JSON output for agents")
     parser.add_argument("--mailto", help="email for OpenAlex polite pool (or env SCHOLAR_MAILTO)")
     parser.add_argument("--version", action="version", version=f"scholar {__version__}")
     args = parser.parse_args(argv)
 
+    # Over-fetch candidates so the filter can surface on-topic papers OpenAlex
+    # ranked below the ambiguous-keyword noise, then gate + order down to count.
+    candidate_count = min(max(args.count * 3, 25), 50)
     try:
-        works = rank(search(
+        candidates = search(
             args.query, since=args.since, oa_only=args.oa,
-            count=args.count, mailto=args.mailto,
-        ))
+            count=candidate_count, mailto=args.mailto,
+        )
     except OpenAlexError as exc:
         return _fail(exc)
+
+    if args.no_filter:
+        works = rank(candidates)[: args.count]
+    else:
+        works = filter_and_rank(
+            args.query, candidates,
+            min_relevance=args.min_relevance, limit=args.count,
+        )
     print(to_json(works) if args.json else to_terminal(works))
     return 0
 

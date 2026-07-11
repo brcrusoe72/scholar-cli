@@ -27,10 +27,13 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from scholar_cli.openalex import OpenAlexError, search  # noqa: E402
 from scholar_cli.ranking import rank  # noqa: E402
+from scholar_cli.relevance import filter_and_rank  # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
 RESULTS = HERE / "results.md"
+FILTERED = HERE / "results_filtered.md"
 FETCH_N = 10
+CANDIDATES = 30  # over-fetch, matching the CLI's search path
 TOP_K = 5
 
 HEADER = "| api# | cred# | title | year | venue | cites | link | primary? |"
@@ -75,6 +78,37 @@ def generate() -> int:
     return 0
 
 
+def generate_filtered() -> int:
+    """Write the SHIPPED path's top-5 (over-fetch + relevance filter) per
+    question, to score the post-filter number."""
+    out = ["# scholar benchmark — filtered (shipped path)", "",
+           "Relevance filter on; top-5 shown. Score `primary?` y/n by the same "
+           "rubric. An empty query = no result cleared the relevance gate.", ""]
+    rows = 0
+    for q in load_questions():
+        out += [f"## {q}", "",
+                "| # | rel | title | year | venue | cites | link | primary? |",
+                "|---|-----|-------|------|-------|-------|------|----------|"]
+        try:
+            works = filter_and_rank(q, search(q, count=CANDIDATES), limit=TOP_K)
+        except OpenAlexError as exc:
+            out += [f"| - | - | SEARCH FAILED: {exc} | | | | | |", ""]
+            continue
+        if not works:
+            out += ["| - | - | (no result cleared the relevance gate) | | | | | |", ""]
+            continue
+        for i, w in enumerate(works, 1):
+            link = w.oa_url or w.doi or w.openalex_id or ""
+            title = w.title.replace("|", "/")[:90]
+            out.append(f"| {i} | {w.relevance} | {title} | {w.year or ''} "
+                       f"| {w.venue or ''} | {w.citations} | {link} | |")
+            rows += 1
+        out.append("")
+    FILTERED.write_text("\n".join(out))
+    print(f"wrote {FILTERED} — {rows} rows to score.")
+    return 0
+
+
 def tally() -> int:
     if not RESULTS.exists():
         print("error: no results.md — generate first.", file=sys.stderr)
@@ -109,4 +143,9 @@ def tally() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(tally() if "--tally" in sys.argv else generate())
+    if "--tally" in sys.argv:
+        sys.exit(tally())
+    elif "--filtered" in sys.argv:
+        sys.exit(generate_filtered())
+    else:
+        sys.exit(generate())

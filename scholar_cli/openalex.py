@@ -37,6 +37,10 @@ SELECT_FIELDS = ",".join(
     ]
 )
 
+# Search pulls abstracts too — the relevance filter scores against title +
+# abstract, and one common word in a title isn't enough to judge topic.
+SEARCH_SELECT = SELECT_FIELDS + ",abstract_inverted_index"
+
 # The single-work fetch also pulls the context layers: abstract + graph edges.
 CONTEXT_SELECT = SELECT_FIELDS + ",abstract_inverted_index,referenced_works,related_works"
 
@@ -58,6 +62,7 @@ class Work:
     is_retracted: bool = False
     openalex_id: str | None = None
     abstract: str | None = None
+    relevance: float | None = None
 
 
 def search(
@@ -67,11 +72,12 @@ def search(
     count: int = 10,
     mailto: str | None = None,
 ) -> list[Work]:
-    """Search OpenAlex works, relevance-ordered."""
+    """Search OpenAlex works, relevance-ordered. Includes abstracts so the
+    relevance filter has enough text to judge topic."""
     params: dict[str, str | int] = {
         "search": query,
         "per-page": count,
-        "select": SELECT_FIELDS,
+        "select": SEARCH_SELECT,
     }
     filters = []
     if since is not None:

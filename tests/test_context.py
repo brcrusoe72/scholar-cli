@@ -15,6 +15,7 @@ def test_deinvert_rebuilds_word_order():
     assert _deinvert(inverted) == "deep context layered deep."
 
 
+@pytest.mark.live
 def test_get_work_by_doi_returns_abstract_and_edges():
     work, refs, related = get_work(KNOWN_DOI)
     assert "microbiome" in work.title.lower()
@@ -23,6 +24,7 @@ def test_get_work_by_doi_returns_abstract_and_edges():
     assert work.openalex_id
 
 
+@pytest.mark.live
 def test_citing_works_returns_ranked_citers():
     work, _, _ = get_work(KNOWN_DOI)
     citers = citing_works(work.openalex_id, count=3)

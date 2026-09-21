@@ -11,6 +11,8 @@ import pytest
 
 from scholar_cli.openalex import OpenAlexError, search
 
+pytestmark = pytest.mark.live
+
 
 def test_search_returns_parsed_works():
     works = search("photosynthesis efficiency", count=5)

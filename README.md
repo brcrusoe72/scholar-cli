@@ -96,7 +96,8 @@ buried and dropping ambiguous-keyword false positives. Reproduce:
 
 ```bash
 uv sync --extra dev
-uv run pytest        # 3 live contract tests against the real API (network required)
+uv run pytest -m "not live"  # deterministic tests
+uv run pytest -m live        # 5 live OpenAlex contracts (network required)
 ```
 
 ## License

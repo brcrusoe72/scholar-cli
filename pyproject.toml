@@ -21,3 +21,8 @@ dev = ["pytest>=8.0"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["scholar_cli"]
+
+[tool.pytest.ini_options]
+markers = [
+    "live: contract tests that require the OpenAlex API",
+]
